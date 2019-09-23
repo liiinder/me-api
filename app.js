@@ -7,7 +7,7 @@ const hello = require('./routes/hello');
 const reports = require('./routes/reports');
 
 const app = express();
-const port = 1339;
+const port = 1337;
 
 const bodyParser = require("body-parser");
 

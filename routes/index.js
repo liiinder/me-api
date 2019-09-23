@@ -5,6 +5,10 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 
+const dotenv = require('dotenv');
+
+dotenv.config();
+
 router.get('/', function (req, res) {
     const data = {
         data: {
@@ -29,25 +33,24 @@ router.post('/register', function (req, res) {
             msg: `Email registered successfully`
         }
     };
-    let status = 201;
 
     bcrypt.hash(myPlaintextPassword, saltRounds, function (err, hash) {
         if (err) {
             data.data.msg = "Error in the password hash";
-            status = 400;
-            res.status(status).json(data);
+            res.status(400).json(data);
+        } else {
+            db.run("INSERT INTO users VALUES (?, ?, ?, ?)", email, hash, birth, name, (err) => {
+                if (err) {
+                    data.data.msg = "This email is already registered";
+                    console.log("This email is already registered");
+                    res.status(400).json(data);
+                } else {
+                    status = 201;
+                    res.status(status).json(data);
+                }
+            });
         }
-        db.run("INSERT INTO users VALUES (?, ?, ?, ?)", email, hash, birth, name, (err) => {
-            if (err) {
-                data.data.msg = "This email is already registered";
-                status = 400;
-                res.status(status).json(data);
-            } else {
-                res.status(status).json(data);
-            }
-        });
     });
-
 });
 
 router.post('/login', function (req, res) {
@@ -58,30 +61,24 @@ router.post('/login', function (req, res) {
         data: {
             msg: `Successfully logged in`
         }
-    }
-    let status = 200;
+    };
 
-    console.log(`secret: ${secret}`);
-    console.log(`payload: ${payload}`);
-    db.each("SELECT password FROM users WHERE email = ?", payload.email, function (err, row) {
-        console.log(`Row.password: ${row.password}`);
-        if (err) {
+    db.all("SELECT password FROM users WHERE email = ? LIMIT 1", payload.email, function (err, row) {
+        if ((err) || (row[0] === undefined)) {
             data.data.msg = "Invalid email";
-            status = 400;
-            res.status(status).json(data); 
-        }
-        bcrypt.compare(req.body.password, row.password, function (err, res) {
-            console.log("RES login: " + res); // res innehåller nu true eller false beroende på om det är rätt lösenord.
-            if (err) {
-                data.data.msg = "Invalid password";
-                status = 400;
-                res.status(status).json(data); 
-            }
-            const token = jwt.sign(payload, secret, { expiresIn: '1h' });
-            
-            console.log(`token? ${token}`);
-            res.status(status).json(data);
-        });
+            res.status(400).json(data);
+        } else {
+            console.log(`row: ${JSON.stringify(row[0])}`)
+            bcrypt.compare(req.body.password, row[0].password, function (err, bcryptRes) {
+                if ((err) || (!bcryptRes)) {
+                    data.data.msg = "Invalid password";
+                    res.status(400).json(data); 
+                } else {
+                    data.data.token = jwt.sign(payload, secret, { expiresIn: '1h' });
+                    res.status(200).json(data);
+                };
+            });
+        };
     });
 });
 
