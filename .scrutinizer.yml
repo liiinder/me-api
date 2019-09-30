@@ -1,0 +1,14 @@
+checks:
+  javascript: true
+build:
+  environment:
+    variables:
+      JWT_SECRET: 'AlongSecretThatIsEnoughForTesting'
+  nodes:
+    coverage:
+      tests:
+        override:
+          - command: npm run test
+            coverage:
+              file: coverage/clover.xml
+              format: clover
