@@ -2,17 +2,6 @@ build:
   dependencies:
     before:
       - npm install node-pre-gyp
-  nodes:
-    analysis:
-      tests:
-        override:
-          - js-scrutinizer-run
-    tests:
-      override:
-        command: 'npm run test-scrutinizer'
-        coverage:
-          file: 'build/coverage/clover.xml'
-          format: 'clover'
   environment:
     variables:
       JWT_SECRET: 'AlongSecretThatIsEnoughForTesting'
