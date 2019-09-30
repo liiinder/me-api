@@ -24,19 +24,12 @@ if (process.env.NODE_ENV !== 'test') {
 app.use('/', index);
 app.use('/reports', reports);
 
-// This is middleware called for all routes.
-// Middleware takes three parameters.
-app.use((req, res, next) => {
-    console.log(req.method);
-    console.log(req.path);
-    next();
-});
-
 // Add routes for 404 and error handling
 // Catch 404 and forward to error handler
 // Put this last
 app.use((req, res, next) => {
     var err = new Error("Not Found");
+
     err.status = 404;
     next(err);
 });
@@ -45,7 +38,7 @@ app.use((err, req, res, next) => {
     if (res.headersSent) {
         return next(err);
     }
-    
+
     res.status(err.status || 500).json({
         "errors": [
             {

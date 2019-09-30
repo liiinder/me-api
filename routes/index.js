@@ -41,11 +41,9 @@ router.post('/register', function (req, res) {
             db.run("INSERT INTO users VALUES (?, ?, ?, ?)", email, hash, birth, name, (err) => {
                 if (err) {
                     data.data.msg = "This email is already registered";
-                    // console.log("This email is already registered");
                     res.status(400).json(data);
                 } else {
-                    status = 201;
-                    res.status(status).json(data);
+                    res.status(201).json(data);
                 }
             });
         }
