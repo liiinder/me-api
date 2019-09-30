@@ -1,5 +1,4 @@
-const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("./db/texts.sqlite");
+const db = require("../db/database.js");
 
 const express = require('express');
 const router = express.Router();
@@ -19,7 +18,7 @@ router.get('/', function (req, res) {
         }
     };
     
-    res.json(data);
+    res.status(200).json(data);
 });
 
 router.post('/register', function (req, res) {
@@ -42,7 +41,7 @@ router.post('/register', function (req, res) {
             db.run("INSERT INTO users VALUES (?, ?, ?, ?)", email, hash, birth, name, (err) => {
                 if (err) {
                     data.data.msg = "This email is already registered";
-                    console.log("This email is already registered");
+                    // console.log("This email is already registered");
                     res.status(400).json(data);
                 } else {
                     status = 201;
@@ -68,7 +67,6 @@ router.post('/login', function (req, res) {
             data.data.msg = "Invalid email";
             res.status(400).json(data);
         } else {
-            console.log(`row: ${JSON.stringify(row[0])}`)
             bcrypt.compare(req.body.password, row[0].password, function (err, bcryptRes) {
                 if ((err) || (!bcryptRes)) {
                     data.data.msg = "Invalid password";

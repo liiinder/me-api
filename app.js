@@ -3,7 +3,6 @@ const cors = require('cors');
 const morgan = require('morgan');
 
 const index = require('./routes/index');
-const hello = require('./routes/hello');
 const reports = require('./routes/reports');
 
 const app = express();
@@ -23,7 +22,6 @@ if (process.env.NODE_ENV !== 'test') {
 
 // external routes 
 app.use('/', index);
-app.use('/hello', hello);
 app.use('/reports', reports);
 
 // This is middleware called for all routes.
@@ -32,33 +30,6 @@ app.use((req, res, next) => {
     console.log(req.method);
     console.log(req.path);
     next();
-});
-
-// Testing routes with method
-app.get("/user", (req, res) => {
-    res.json({
-        data: {
-            msg: "Got a GET request, sending back default 200"
-        }
-    });
-});
-
-app.post("/user", (req, res) => {
-    res.status(201).json({
-        data: {
-            msg: "Got a POST request, sending back 201 Created"
-        }
-    });
-});
-
-app.put("/user", (req, res) => {
-    // PUT requests should return 204 No Content
-    res.status(204).send();
-});
-
-app.delete("/user", (req, res) => {
-    // DELETE requests should return 204 No Content
-    res.status(204).send();
 });
 
 // Add routes for 404 and error handling
@@ -87,4 +58,6 @@ app.use((err, req, res, next) => {
 });
 
 // Start up server
-app.listen(port, () => console.log(`Example API listening on port ${port}!`));
+const server = app.listen(port, () => console.log(`Example API listening on port ${port}!`));
+
+module.exports = server;
