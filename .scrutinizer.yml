@@ -5,6 +5,9 @@ build:
   environment:
     variables:
       JWT_SECRET: 'AlongSecretThatIsEnoughForTesting'
+filter:
+  excluded_paths:
+    - "node_modules/"
 checks:
   javascript: true
 
