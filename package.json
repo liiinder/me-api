@@ -7,7 +7,7 @@
     "start": "nodemon app.js",
     "node": "node app.js",
     "pretest": "bash db/reset_test_db.bash",
-    "test": "nyc --reporter=html --reporter=text mocha 'test/**/*.js' --timeout 10000"
+    "test": "nyc --reporter=html --reporter=text --reporter=clover mocha 'test/**/*.js' --timeout 10000"
   },
   "author": "",
   "license": "ISC",
